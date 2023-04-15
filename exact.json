@@ -1,0 +1,46 @@
+{
+  "arguments": [
+    {
+      "source": "cib",
+      "optionsSets": [
+        "nlu_direct_response_filter",
+        "deepleo",
+        "enablemm",
+        "h3precise",
+        "nocache",
+        "nointernalsugg",
+        "nourldedupe",
+        "healthansgnd",
+        "travelansgnd",
+        "dv3sugg",
+        "clgalileo"
+      ],
+      "allowedMessageTypes": [
+        "Chat"],
+      "sliceIds": [],
+      "verbosity": "verbose",
+      "traceId": "",
+      "isStartOfSession": false,
+      "message": {
+        "locale": "de-DE",
+        "market": "de-DE",
+        "region": "CH",
+        "location": "",
+        "locationHints": [],
+        "timestamp": "",
+        "author": "user",
+        "inputMethod": "Keyboard",
+        "text": "",
+        "messageType": "Chat"
+      },
+      "conversationSignature": "",
+      "participant": {
+        "id": ""
+      },
+      "conversationId": ""
+    }
+  ],
+  "invocationId": "",
+  "target": "chat",
+  "type": 4
+}
