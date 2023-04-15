@@ -1,6 +1,7 @@
 # Bing AI Chat Golang unofficial API
+## Legal notice: this client is unofficial and I will not take any responsibility for what you use it for or what you do with it.
 
-To use it you need to export all BING cookies to the environment variable.
+To use it, you need to export all BING cookies to the environment variable.
 
 TODO:
  
