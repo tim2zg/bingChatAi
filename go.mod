@@ -3,7 +3,6 @@ module github.com/tim2zg/bingChatAi
 go 1.20
 
 require (
-	github.com/davecgh/go-spew v1.1.1
 	github.com/joho/godotenv v1.5.1
 	nhooyr.io/websocket v1.8.7
 )
