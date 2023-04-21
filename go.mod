@@ -1,4 +1,4 @@
-module bingChatAi
+module github.com/tim2zg/bingChatAi
 
 go 1.20
 

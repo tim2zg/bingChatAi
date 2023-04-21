@@ -1,12 +1,12 @@
 package main
 
 import (
-	"bingChatAi"
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
+	"github.com/tim2zg/bingChatAi"
 	"io"
 	"log"
 	"os"
