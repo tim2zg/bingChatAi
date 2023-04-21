@@ -1,8 +1,8 @@
-package main
+package bingChatAi
 
 import "time"
 
-type chatSession struct {
+type ChatSession struct {
 	ConversationID, ClientID, ConversationSignature, InvocationId string
 }
 
@@ -16,7 +16,7 @@ type createConversation struct {
 	} `json:"result"`
 }
 
-type startMessage struct {
+type StartMessage struct {
 	Arguments []struct {
 		Source              string   `json:"source"`
 		OptionsSets         []any    `json:"optionsSets"`
@@ -48,7 +48,7 @@ type startMessage struct {
 	Type         int    `json:"type"`
 }
 
-type chatResponse struct {
+type ChatResponse struct {
 	Type         int    `json:"type"`
 	InvocationID string `json:"invocationId"`
 	Target       string `json:"target"`
