@@ -3,6 +3,8 @@
 
 To use it, you need to export all BING cookies to the environment variable.
 
+Use as package now
+
 TODO:
  
 - ~~Implement different moods~~ 
