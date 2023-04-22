@@ -37,7 +37,7 @@ func main() {
 		fmt.Println("Conversation session loaded.")
 	}
 
-	session, data, err := bingChatAi.ParseJSON(chatSessionMain, "Can you write a long story with multiple prompts?", 2)
+	session, data, err := bingChatAi.ParseJSON(chatSessionMain, "Can you write a long story with multiple prompts?", 3)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -50,7 +50,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	conversation, conversations, err := bingChatAi.Conversation(string(b), false, false, false)
+	conversation, conversations, err := bingChatAi.Conversation(string(b), true, false, false)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"nhooyr.io/websocket"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -75,28 +76,38 @@ func ParseJSON(session ChatSession, text string, mode int) (ChatSession, StartMe
 	// open the right json file
 	switch mode {
 	case 1:
-		file, err := os.Open("normal.json")
+		folderPath, err := os.Getwd()
+		if err != nil {
+			return ChatSession{}, StartMessage{}, err
+		}
+		file, err := os.Open(filepath.Join(folderPath, "normal.json"))
 		if err != nil {
 			return ChatSession{}, StartMessage{}, err
 		}
 		return generateMessage(file, session, text)
 	case 2:
-		file, err := os.Open("exact.json")
+		folderPath, err := os.Getwd()
+		if err != nil {
+			return ChatSession{}, StartMessage{}, err
+		}
+		file, err := os.Open(filepath.Join(folderPath, "exact.json"))
 		if err != nil {
 			return ChatSession{}, StartMessage{}, err
 		}
 		return generateMessage(file, session, text)
 	case 3:
-		file, err := os.Open("creative.json")
+		folderPath, err := os.Getwd()
 		if err != nil {
 			return ChatSession{}, StartMessage{}, err
 		}
+		file, err := os.Open(filepath.Join(folderPath, "creative.json"))
 		return generateMessage(file, session, text)
 	default:
-		file, err := os.Open("normal.json")
+		folderPath, err := os.Getwd()
 		if err != nil {
 			return ChatSession{}, StartMessage{}, err
 		}
+		file, err := os.Open(filepath.Join(folderPath, "normal.json"))
 		return generateMessage(file, session, text)
 	}
 }
