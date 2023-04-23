@@ -7,8 +7,6 @@ import (
 	"io"
 	"net/http"
 	"nhooyr.io/websocket"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -76,53 +74,21 @@ func ParseJSON(session ChatSession, text string, mode int) (ChatSession, StartMe
 	// open the right json file
 	switch mode {
 	case 1:
-		folderPath, err := os.Getwd()
-		if err != nil {
-			return ChatSession{}, StartMessage{}, err
-		}
-		file, err := os.Open(filepath.Join(folderPath, "normal.json"))
-		if err != nil {
-			return ChatSession{}, StartMessage{}, err
-		}
-		return generateMessage(file, session, text)
+		return generateMessage(GetNormal(), session, text)
 	case 2:
-		folderPath, err := os.Getwd()
-		if err != nil {
-			return ChatSession{}, StartMessage{}, err
-		}
-		file, err := os.Open(filepath.Join(folderPath, "exact.json"))
-		if err != nil {
-			return ChatSession{}, StartMessage{}, err
-		}
-		return generateMessage(file, session, text)
+		return generateMessage(GetExact(), session, text)
 	case 3:
-		folderPath, err := os.Getwd()
-		if err != nil {
-			return ChatSession{}, StartMessage{}, err
-		}
-		file, err := os.Open(filepath.Join(folderPath, "creative.json"))
-		return generateMessage(file, session, text)
+		return generateMessage(GetCreative(), session, text)
 	default:
-		folderPath, err := os.Getwd()
-		if err != nil {
-			return ChatSession{}, StartMessage{}, err
-		}
-		file, err := os.Open(filepath.Join(folderPath, "normal.json"))
-		return generateMessage(file, session, text)
+		return generateMessage(GetNormal(), session, text)
 	}
 }
 
-func generateMessage(file *os.File, session ChatSession, text string) (ChatSession, StartMessage, error) {
-	// read file
-	content, err := io.ReadAll(file)
-	if err != nil {
-		return ChatSession{}, StartMessage{}, err
-	}
-
+func generateMessage(mode string, session ChatSession, text string) (ChatSession, StartMessage, error) {
 	// unmarshal json
 	var data StartMessage
-	err2 := json.Unmarshal(content, &data)
-	if err != nil {
+	err2 := json.Unmarshal([]byte(mode), &data)
+	if err2 != nil {
 		return ChatSession{}, StartMessage{}, err2
 	}
 
