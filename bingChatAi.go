@@ -118,16 +118,13 @@ func generateMessage(mode string, session ChatSession, text string) (ChatSession
 }
 
 func Conversation(data string, print bool, printRaw bool, debug bool) (ChatResponse, []ChatResponse, error) {
-	msgChan := make(chan ChatResponse)
 	var responses []ChatResponse
+	var finalResponse ChatResponse
+	var count int
+	var finished bool
 
-	// on close
-	defer func() {
-		wg.Wait()
-		if print {
-			fmt.Println("Conversation closed")
-		}
-	}()
+	finished = false
+
 	ctx := context.Background()
 
 	// connect to websocket
@@ -138,6 +135,8 @@ func Conversation(data string, print bool, printRaw bool, debug bool) (ChatRespo
 	if debug {
 		fmt.Println("Connected to websocket")
 	}
+
+	c.SetReadLimit(1000000)
 
 	// send hello message
 	err = c.Write(ctx, websocket.MessageText, []byte("{\"protocol\":\"json\",\"version\":1}\u001E"))
@@ -156,10 +155,16 @@ func Conversation(data string, print bool, printRaw bool, debug bool) (ChatRespo
 		// if the connection gets closed return
 		if err != nil {
 			if websocket.CloseStatus(err) == websocket.StatusNormalClosure {
-				// close connection and return
-				// read the chan
-				response := <-msgChan
-				return response, responses, nil
+				// wait for all goroutines to finish
+				wg.Wait()
+
+				if !finished {
+					fmt.Println("no final response")
+					return ChatResponse{}, []ChatResponse{}, fmt.Errorf("no final response")
+
+				} else {
+					return finalResponse, responses, nil
+				}
 			} else {
 				// connection error
 				return ChatResponse{}, []ChatResponse{}, err
@@ -174,17 +179,40 @@ func Conversation(data string, print bool, printRaw bool, debug bool) (ChatRespo
 			// convert to string
 			msg := string(content)
 
-			// parse the message in a new goroutine
-			wg.Add(1)
-			go func() {
-				if printRaw {
-					fmt.Println("Raw Message: ")
-					fmt.Println(msg)
-				}
+			count++
+			if debug {
+				fmt.Println(count)
+			}
 
-				parsed, err := parseChatMessage(msg, msgChan)
+			// wait fot the answer
+			if msg == "{\"type\":6}\u001E" {
+				if !finished {
+					// send our command
+					err = c.Write(ctx, websocket.MessageText, []byte("{\"type\":6}\u001E"))
+					if err != nil {
+						return ChatResponse{}, []ChatResponse{}, err
+					}
+					if debug {
+						fmt.Println("Sent ping answer")
+					}
+				}
+			}
+
+			if printRaw {
+				fmt.Println("Raw Message: ")
+				fmt.Println(msg)
+			}
+
+			wg.Add(1)
+			// parse the message in a new goroutine
+			go func() {
+				parsed, final, err := parseChatMessage(msg)
 				if err != nil {
 					fmt.Println("error parsing message: ", err)
+				}
+				if final {
+					finalResponse = parsed
+					finished = true
 				}
 
 				if print {
@@ -211,6 +239,8 @@ func Conversation(data string, print bool, printRaw bool, debug bool) (ChatRespo
 
 				// add to the array
 				responses = append(responses, parsed)
+
+				defer wg.Done()
 			}()
 
 			// wait fot the answer
@@ -228,28 +258,28 @@ func Conversation(data string, print bool, printRaw bool, debug bool) (ChatRespo
 					fmt.Println("Sent command: ", data)
 				}
 			}
+
 		}
 	}
 }
 
-func parseChatMessage(msg string, back chan ChatResponse) (ChatResponse, error) {
-	defer wg.Done()
-
+func parseChatMessage(msg string) (ChatResponse, bool, error) {
 	msg = strings.Split(msg, "\u001E")[0]
 
 	// parse the message to json
 	var response ChatResponse
 	err2 := json.Unmarshal([]byte(msg), &response)
 	if err2 != nil {
-		return ChatResponse{}, err2
+		return ChatResponse{}, false, err2
 	}
 
 	// see if response is type 2
 	if response.Type == 2 {
-		// send the response back
-		back <- response
+		fmt.Println("Final response:")
+		// return message
+		return response, true, nil
+	} else {
+		// return message
+		return response, false, nil
 	}
-
-	// return message
-	return response, nil
 }

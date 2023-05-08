@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
@@ -10,6 +11,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -37,7 +39,17 @@ func main() {
 		fmt.Println("Conversation session loaded.")
 	}
 
-	session, data, err := bingChatAi.ParseJSON(chatSessionMain, "Can you write a long story with multiple prompts?", 3)
+	fmt.Print("Enter Prompt: ")
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("ERROR: ", err)
+		return
+	}
+	input = strings.TrimSuffix(input, "\n")
+	fmt.Println("Input: ", input)
+
+	session, data, err := bingChatAi.ParseJSON(chatSessionMain, input, 3)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -50,7 +62,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	conversation, conversations, err := bingChatAi.Conversation(string(b), true, true, true)
+	conversation, conversations, err := bingChatAi.Conversation(string(b), true, false, false)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -58,10 +70,9 @@ func main() {
 	fmt.Println(conversation)
 	fmt.Println(len(conversations))
 	saveResponse(conversations)
-
 	// load response
 	conversations = loadResponse()
-	fmt.Println(len(conversations))
+	fmt.Println(conversations[len(conversations)-3].Item.Messages[len(conversations[len(conversations)-3].Item.Messages)-1].Text)
 }
 
 func loadResponse() []bingChatAi.ChatResponse {
