@@ -68,10 +68,11 @@ func main() {
 	}
 	fmt.Println("--------------------")
 	fmt.Println(conversation)
-	fmt.Println(len(conversations))
+	//fmt.Println(len(conversations))
 	saveResponse(conversations)
 	// load response
-	conversations = loadResponse()
+	//conversations = loadResponse()
+	fmt.Println("TLDR:")
 	fmt.Println(conversations[len(conversations)-3].Item.Messages[len(conversations[len(conversations)-3].Item.Messages)-1].Text)
 }
 
