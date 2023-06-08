@@ -62,7 +62,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	conversation, conversations, err := bingChatAi.Conversation(string(b), true, false, false)
+	conversation, conversations, err := bingChatAi.Conversation(string(b), true, true, true)
 	if err != nil {
 		fmt.Println(err)
 	}
